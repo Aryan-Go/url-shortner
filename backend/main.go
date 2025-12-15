@@ -21,12 +21,20 @@ func main() {
 	port := os.Getenv("PORT")
 	ctx := context.Background()
 	database.DbSetup(ctx)
+	defer func() {
+		if database.Db != nil {
+			database.Db.Close(ctx)
+			fmt.Println("\nDatabase connection closed.")
+		}
+	}()
 	router := gin.Default()
 
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
 		})
+		return
+
 	})
 	router.GET("/:shortCode", func(c *gin.Context) {
 		code := c.Param("shortCode")
